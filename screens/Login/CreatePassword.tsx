@@ -192,7 +192,7 @@ export default function CreatePassword() {
           alt="Gluestack-ui pro"
           resizeMode="contain"
           source={require('./assets/images/Logo.png')}
-        style={{width:500,height:500}}
+          style={{width:500,height:500}}
         />
       </Center>
     );

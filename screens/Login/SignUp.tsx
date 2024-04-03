@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axiosInstance from '../../axios';
+import axios from 'axios';
 import {
   Button,
   Checkbox,
@@ -59,6 +61,7 @@ const StyledImage = styled(Image, {
 });
 
 const signUpSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().min(1, 'Email is required').email(),
   password: z
     .string()
@@ -187,6 +190,16 @@ const SignUpForm = () => {
       });
     }
     // Implement your own onSubmit and navigation logic here.
+    axios
+			.post(`http://127.0.0.1:8000/api/user/create/`, {
+				email: _data.email,
+				username: _data.username,
+				password: _data.password,
+			})
+			.then((res) => {
+				console.log(res);
+				console.log(res.data);
+			});
     // Navigate to appropriate location
     router.replace('/login');
   };
@@ -248,6 +261,48 @@ const SignUpForm = () => {
             <FormControlErrorIcon size="md" as={AlertTriangle} />
             <FormControlErrorText>
               {errors?.email?.message}
+            </FormControlErrorText>
+          </FormControlError>
+        </FormControl>
+
+        <FormControl
+          isInvalid={!!errors.username}
+          isRequired={true}
+          my="$6"
+        >
+          <Controller
+            name="username"
+            defaultValue=""
+            control={control}
+            rules={{
+              validate: async (value) => {
+                try {
+                  await signUpSchema.parseAsync({ username: value });
+                  return true;
+                } catch (error: any) {
+                  return error.message;
+                }
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input>
+                <InputField
+                  placeholder="Username"
+                  fontSize="$sm"
+                  type="text"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  onSubmitEditing={handleKeyPress}
+                  returnKeyType="done"
+                />
+              </Input>
+            )}
+          />
+          <FormControlError>
+            <FormControlErrorIcon size="md" as={AlertTriangle} />
+            <FormControlErrorText>
+              {errors?.username?.message}
             </FormControlErrorText>
           </FormControlError>
         </FormControl>

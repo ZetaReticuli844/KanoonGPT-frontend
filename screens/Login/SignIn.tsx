@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axiosInstance from '../../axios/login';
 import {
   Center,
   Button,
@@ -43,7 +44,6 @@ import { GoogleIcon, FacebookIcon } from './assets/Icons/Social';
 
 import GuestLayout from '../../layouts/GuestLayout';
 import StyledExpoRouterLink from '../../components/StyledExpoRouterLink';
-
 import { styled } from '@gluestack-style/react';
 
 const StyledImage = styled(Image, {
@@ -85,7 +85,11 @@ const SignInForm = () => {
 
   const toast = useToast();
 
-  const onSubmit = (_data: SignInSchemaType) => {
+  const onSubmit = (data: SignInSchemaType) => {
+    const { email, password } = data; // Destructuring email and password from data object
+    const userData = { email, password }; // Creating an object with email and password
+     // Logging the object containing email and password
+    // You can further use userData object as needed
     toast.show({
       placement: 'bottom right',
       render: ({ id }) => {
@@ -98,7 +102,23 @@ const SignInForm = () => {
     });
     reset();
     // Implement your own onSubmit and navigation logic here.
+    console.log(userData);
+    axiosInstance
+			.post(`auth/token/`, {
+				grant_type: 'password',
+				username: userData.email,
+				password: userData.password,
+				client_id: 'CaICcygWzYzWf6wvZYrvfSxcKRFp46cOXgUjYkqX',
+				client_secret:
+					'zFQae7QbxcsjCwQy1bZrEYUFRgn4rZra3tgBq7eD3C9dHHQ0TbwSQ3exUUrV68IC0EGxhlHKVA8LCCxNSRsW7ndI5eDQD9tnCacHx3xQrnRCKnPPfCCb9Om9Z4UcBQlw',
+			})
+			.then((res) => {
+				localStorage.setItem('access_token', res.data.access_token);
+				localStorage.setItem('refresh_token', res.data.refresh_token);
+        console.log(res.data.access_token)
+			});
   };
+  
 
   const handleKeyPress = () => {
     Keyboard.dismiss();
@@ -112,6 +132,8 @@ const SignInForm = () => {
       return !showState;
     });
   };
+
+  
 
   return (
     <>
